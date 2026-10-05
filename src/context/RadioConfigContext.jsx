@@ -91,6 +91,7 @@ export const RadioConfigProvider = ({ children }) => {
           onAir: { ...DEFAULT_RADIO_CONFIG.onAir, ...(parsed.onAir || {}) },
           emergencyAlert: { ...DEFAULT_RADIO_CONFIG.emergencyAlert, ...(parsed.emergencyAlert || {}) },
           remoteBroadcast: { ...DEFAULT_RADIO_CONFIG.remoteBroadcast, ...(parsed.remoteBroadcast || {}) },
+          podcasts: Array.isArray(parsed.podcasts) && parsed.podcasts.length > 0 ? parsed.podcasts : DEFAULT_RADIO_CONFIG.podcasts,
         };
       }
     } catch {

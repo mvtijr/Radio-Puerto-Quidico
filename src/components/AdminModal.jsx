@@ -96,6 +96,7 @@ export const AdminModal = ({ isOpen, onClose }) => {
     { id: 'onair', label: 'Al Aire & Música', icon: 'fa-compact-disc' },
     { id: 'emergency', label: 'Cadena de Emergencia', icon: 'fa-triangle-exclamation' },
     { id: 'schedule', label: 'Programación', icon: 'fa-calendar-days' },
+    { id: 'podcasts', label: 'Radio a la Carta', icon: 'fa-headphones' },
     { id: 'maritime', label: 'Mareas & Mar', icon: 'fa-anchor' },
     { id: 'notices', label: 'Avisos Comunidad', icon: 'fa-bullhorn' },
     { id: 'sponsors', label: 'Auspiciadores & Pautas', icon: 'fa-handshake' },
@@ -2247,6 +2248,163 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                                 setFormData({ ...formData, schedule: updated });
                               }}
                               className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-lg px-2.5 py-1.5 text-white"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB RADIO A LA CARTA / PÓDCASTS */}
+              {activeTab === 'podcasts' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                    <p className="text-xs text-[#c0c6d6]">
+                      Administra los programas grabados, entrevistas comunitarias y archivos de audio disponibles en la sección "Radio a la Carta".
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newPod = {
+                          id: `pod-${Date.now()}`,
+                          title: "Nuevo Programa Grabado",
+                          duration: "30:00",
+                          date: "Octubre 2026",
+                          category: "Historia Local",
+                          description: "Descripción del episodio o entrevista comunitaria.",
+                          audioUrl: "https://cdn.freesound.org/previews/612/612089_11861866-lq.mp3",
+                          cover: "/images/originales_blog/header-banner.jpg"
+                        };
+                        setFormData({ ...formData, podcasts: [...(formData.podcasts || RADIO_CONFIG.podcasts || []), newPod] });
+                      }}
+                      className="bg-[#00d2ff] hover:bg-[#a5e7ff] text-[#003543] px-3.5 py-1.5 rounded-xl font-bold uppercase text-[11px] tracking-wide flex items-center gap-1.5 cursor-pointer shadow"
+                    >
+                      <i className="fa-solid fa-plus"></i> Agregar Pódcast
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {(formData.podcasts || RADIO_CONFIG.podcasts)?.map((pod, index) => (
+                      <div key={pod.id || index} className="bg-[#112036]/70 border border-[#a8c8ff]/20 rounded-2xl p-4 space-y-3">
+                        <div className="flex items-center justify-between border-b border-[#a8c8ff]/10 pb-2">
+                          <span className="font-['Montserrat',sans-serif] font-bold text-white text-sm flex items-center gap-2">
+                            <i className="fa-solid fa-podcast text-[#00d2ff]"></i>
+                            <span>Pódcast #{index + 1}: {pod.title || 'Sin título'}</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = (formData.podcasts || RADIO_CONFIG.podcasts).filter((_, i) => i !== index);
+                              setFormData({ ...formData, podcasts: updated });
+                            }}
+                            className="text-[#ffb4ab] hover:text-white text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                          >
+                            <i className="fa-solid fa-trash-can"></i> Eliminar
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div className="sm:col-span-2">
+                            <label className="block text-[10px] uppercase text-[#a5e7ff] mb-1 font-bold">Título del Episodio</label>
+                            <input
+                              type="text"
+                              value={pod.title || ''}
+                              onChange={(e) => {
+                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                currentList[index] = { ...currentList[index], title: e.target.value };
+                                setFormData({ ...formData, podcasts: currentList });
+                              }}
+                              className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-lg px-2.5 py-1.5 text-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] uppercase text-[#a5e7ff] mb-1 font-bold">Categoría</label>
+                            <select
+                              value={pod.category || 'Historia Local'}
+                              onChange={(e) => {
+                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                currentList[index] = { ...currentList[index], category: e.target.value };
+                                setFormData({ ...formData, podcasts: currentList });
+                              }}
+                              className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-lg px-2.5 py-1.5 text-white"
+                            >
+                              <option value="Historia Local">Historia Local</option>
+                              <option value="Reportaje Especial">Reportaje Especial</option>
+                              <option value="Comunidad & Autoridades">Comunidad & Autoridades</option>
+                              <option value="Música & Entretención">Música & Entretención</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] uppercase text-[#a5e7ff] mb-1 font-bold">Duración (ej: 28:40)</label>
+                            <input
+                              type="text"
+                              value={pod.duration || ''}
+                              onChange={(e) => {
+                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                currentList[index] = { ...currentList[index], duration: e.target.value };
+                                setFormData({ ...formData, podcasts: currentList });
+                              }}
+                              className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-lg px-2.5 py-1.5 text-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] uppercase text-[#a5e7ff] mb-1 font-bold">Fecha / Periodo</label>
+                            <input
+                              type="text"
+                              value={pod.date || ''}
+                              onChange={(e) => {
+                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                currentList[index] = { ...currentList[index], date: e.target.value };
+                                setFormData({ ...formData, podcasts: currentList });
+                              }}
+                              className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-lg px-2.5 py-1.5 text-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] uppercase text-[#a5e7ff] mb-1 font-bold">URL Portada / Imagen</label>
+                            <input
+                              type="text"
+                              value={pod.cover || ''}
+                              onChange={(e) => {
+                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                currentList[index] = { ...currentList[index], cover: e.target.value };
+                                setFormData({ ...formData, podcasts: currentList });
+                              }}
+                              className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-lg px-2.5 py-1.5 text-white"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label className="block text-[10px] uppercase text-[#a5e7ff] mb-1 font-bold">URL del Audio (MP3 / Stream)</label>
+                            <input
+                              type="text"
+                              value={pod.audioUrl || ''}
+                              onChange={(e) => {
+                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                currentList[index] = { ...currentList[index], audioUrl: e.target.value };
+                                setFormData({ ...formData, podcasts: currentList });
+                              }}
+                              className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-lg px-2.5 py-1.5 text-white"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label className="block text-[10px] uppercase text-[#a5e7ff] mb-1 font-bold">Descripción Resumida</label>
+                            <textarea
+                              rows={2}
+                              value={pod.description || ''}
+                              onChange={(e) => {
+                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                currentList[index] = { ...currentList[index], description: e.target.value };
+                                setFormData({ ...formData, podcasts: currentList });
+                              }}
+                              className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-lg px-2.5 py-1.5 text-white resize-none"
                             />
                           </div>
                         </div>

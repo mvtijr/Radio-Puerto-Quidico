@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useAudio } from '../context/AudioContext';
-import { getCurrentShow } from '../utils/timeUtils';
 import { useRadioConfig } from '../context/RadioConfigContext';
 import { RADIO_CONFIG } from '../config/radioConfig';
 import { useOnAirMetadata } from '../hooks/useOnAirMetadata';
+import { AudioSpectrumVisualizer } from './AudioSpectrumVisualizer';
 
 export const AudioPlayer = ({ onOpenRequestModal, onOpenSongHistory, onOpenSleepTimer, onOpenCarMode }) => {
   const { config } = useRadioConfig();
   const currentConfig = config || RADIO_CONFIG;
   const {
+    getAudioElement,
     playbackMode,
     isPlaying,
     isLoading,
@@ -37,7 +38,6 @@ export const AudioPlayer = ({ onOpenRequestModal, onOpenSongHistory, onOpenSleep
 
   const { song, artist, show, host, broadcastMode, searchYouTube, dedicateOnWhatsApp } = useOnAirMetadata();
 
-  const [currentShow] = useState(getCurrentShow());
   const [selectedFreq, setSelectedFreq] = useState('105.1');
 
   const displayTitle = playbackMode === 'podcast' && currentPodcast
@@ -354,25 +354,20 @@ export const AudioPlayer = ({ onOpenRequestModal, onOpenSongHistory, onOpenSleep
             </div>
           </div>
 
-          {/* Lado Derecho: Volumen y Botón WhatsApp Cabina */}
-          <div className="hidden md:flex md:col-span-3 items-center justify-end gap-4">
-            <div className="flex items-center gap-2 text-[#c0c6d6]">
-              <i className="fa-solid fa-volume-high text-xs text-[#a5e7ff]"></i>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value={isMuted ? 0 : volume}
-                onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                className="w-20 accent-[#00d2ff] h-1.5 bg-[#071933] rounded cursor-pointer"
-                title={`Volumen: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
-              />
-            </div>
+          {/* Lado Derecho: Visualizador de Espectro FFT en Pantallas de Escritorio y Botón WhatsApp Cabina */}
+          <div className="hidden md:flex md:col-span-3 items-center justify-end gap-3.5">
+            <AudioSpectrumVisualizer
+              isPlaying={isPlaying}
+              isMuted={isMuted}
+              volume={volume}
+              onVolumeChange={handleVolumeChange}
+              onToggleMute={toggleMute}
+              getAudioElement={getAudioElement}
+            />
 
             <button
               onClick={onOpenRequestModal}
-              className="bg-gradient-to-r from-[#f6bf22] to-[#ffc837] hover:brightness-110 text-[#3f2e00] px-4 py-2.5 rounded-full text-xs font-['Montserrat',sans-serif] font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-[0_4px_16px_rgba(246,191,34,0.3)] hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap"
+              className="bg-gradient-to-r from-[#f6bf22] to-[#ffc837] hover:brightness-110 text-[#3f2e00] px-3.5 py-2.5 rounded-full text-xs font-['Montserrat',sans-serif] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-[0_4px_16px_rgba(246,191,34,0.3)] hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap"
             >
               <i className="fa-brands fa-whatsapp text-sm"></i> WhatsApp Cabina
             </button>

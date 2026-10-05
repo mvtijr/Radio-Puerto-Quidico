@@ -98,6 +98,11 @@ export const Footer = ({ onScrollTo, onOpenRequestModal, onOpenAdminModal, onOpe
                 </button>
               </li>
               <li>
+                <button onClick={() => onScrollTo('podcasts')} className="hover:text-[#00d2ff] transition-colors">
+                  Radio a la Carta (Pódcasts)
+                </button>
+              </li>
+              <li>
                 <button onClick={() => onScrollTo('quidico-tv')} className="hover:text-[#00d2ff] transition-colors">
                   Quidico TV (Canal de Video)
                 </button>

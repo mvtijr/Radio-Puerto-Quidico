@@ -6,6 +6,7 @@ import { HeroSection } from './components/HeroSection';
 import { AudioPlayer } from './components/AudioPlayer';
 import { QuidicoTVSection } from './components/QuidicoTVSection';
 import { ScheduleSection } from './components/ScheduleSection';
+import { PodcastsSection } from './components/PodcastsSection';
 import { SponsorsSection } from './components/SponsorsSection';
 import { CommunitySection } from './components/CommunitySection';
 import { AboutSection } from './components/AboutSection';
@@ -99,8 +100,11 @@ function AppContent() {
             onOpenRequestModal={handleOpenRequestModal}
           />
 
-          {/* Parrilla de Programación Semanal & Radio a la Carta */}
+          {/* Parrilla de Programación Semanal Oficial */}
           <ScheduleSection />
+
+          {/* Radio a la Carta: Repositorio Comunitario de Pódcasts y Programas Grabados */}
+          <PodcastsSection />
 
           {/* Auspiciadores Oficiales de la Costa */}
           <SponsorsSection 

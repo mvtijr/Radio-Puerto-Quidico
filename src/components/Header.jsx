@@ -21,6 +21,7 @@ export const Header = ({ onOpenRequestModal, onOpenMaritimeModal, onOpenPWAInsta
     { id: 'hero', label: 'Inicio' },
     { id: 'player', label: 'En Vivo' },
     { id: 'programacion', label: 'Programación' },
+    { id: 'podcasts', label: 'A la Carta', badge: 'Podcast' },
     { id: 'quidico-tv', label: 'Quidico TV', badge: 'HD' },
     { id: 'comunidad', label: 'Comunidad' },
     { id: 'auspiciadores', label: 'Auspiciadores' },

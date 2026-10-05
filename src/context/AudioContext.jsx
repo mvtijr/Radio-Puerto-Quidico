@@ -541,6 +541,7 @@ export const AudioProvider = ({ children }) => {
   return (
     <AudioContext.Provider
       value={{
+        getAudioElement: () => audioRef.current,
         playbackMode,
         isPlaying,
         isLoading,
