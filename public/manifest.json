@@ -1,0 +1,28 @@
+{
+  "name": "Radio Puerto Quidico 105.1 FM / 91.3 FM",
+  "short_name": "Radio Quidico",
+  "description": "Tu Radio de Siempre • Transmisión en vivo desde Caleta Quidico y Tirúa, Región del Biobío, Chile",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#010e24",
+  "theme_color": "#00d2ff",
+  "lang": "es-CL",
+  "categories": ["music", "news", "entertainment"],
+  "icons": [
+    {
+      "src": "/images/logo-radio-puerto-quidico.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo-radio-puerto-quidico.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

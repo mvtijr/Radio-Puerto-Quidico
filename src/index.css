@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #041329;
+  --color-surface-dim: #041329;
+  --color-surface-bright: #2c3951;
+  --color-surface-container-lowest: #010e24;
+  --color-surface-container-low: #0d1c32;
+  --color-surface-container: #112036;
+  --color-surface-container-high: #1c2a41;
+  --color-surface-container-highest: #27354c;
+  
+  --color-primary: #a8c8ff;
+  --color-primary-container: #3491ff;
+  --color-on-primary: #003061;
+  --color-on-primary-container: #002955;
+  
+  --color-secondary: #a5e7ff;
+  --color-secondary-container: #00d2ff;
+  --color-on-secondary: #003543;
+  --color-secondary-fixed-dim: #47d6ff;
+  
+  --color-tertiary: #f6bf22;
+  --color-tertiary-container: #b58a00;
+  --color-on-tertiary: #3f2e00;
+  --color-on-tertiary-container: #362700;
+  --color-tertiary-fixed: #ffdf99;
+  
+  --color-on-surface: #d6e3ff;
+  --color-on-surface-variant: #c0c6d6;
+  --color-outline: #8a919f;
+  --color-outline-variant: #404754;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+
+  --font-poster: 'Anton', 'Impact', sans-serif;
+  --font-condensed: 'Oswald', sans-serif;
+  --font-headline: 'Montserrat', sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+@layer base {
+  html, body {
+    background-color: #041329;
+    color: #d6e3ff;
+    font-family: var(--font-sans);
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Efectos visuales de Stitch Móvil & Desktop */
+.text-poster-glow {
+  text-shadow: 0 4px 24px rgba(0, 136, 255, 0.45);
+}
+
+.text-stroke-white {
+  -webkit-text-stroke: 1.5px white;
+  color: transparent;
+}
+
+.badge-outline {
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+/* Animación del ecualizador sonoro de Stitch */
+@keyframes equalizer {
+  0%, 100% { height: 6px; }
+  50% { height: 28px; }
+}
+
+.eq-bar {
+  animation: equalizer 1.1s ease-in-out infinite;
+}
+.eq-bar:nth-child(2) { animation-delay: 0.15s; }
+.eq-bar:nth-child(3) { animation-delay: 0.35s; }
+.eq-bar:nth-child(4) { animation-delay: 0.2s; }
+.eq-bar:nth-child(5) { animation-delay: 0.45s; }
+.eq-bar:nth-child(6) { animation-delay: 0.25s; }
+.eq-bar:nth-child(7) { animation-delay: 0.4s; }
+.eq-bar:nth-child(8) { animation-delay: 0.1s; }
+
+/* Safe padding para móviles con muesca / notch */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Animaciones de ondas de radio estilo StreamingHD */
+@keyframes wave-drift-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-1440px); }
+}
+
+@keyframes wave-drift-right {
+  0% { transform: translateX(-1440px); }
+  100% { transform: translateX(0); }
+}
+
+.wave-1 {
+  animation: wave-drift-left 36s linear infinite;
+  will-change: transform;
+}
+.wave-2 {
+  animation: wave-drift-right 54s linear infinite;
+  will-change: transform;
+}
+.wave-3 {
+  animation: wave-drift-left 26s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-1, .wave-2, .wave-3 {
+    animation: none !important;
+  }
+}
+
+/* Clases de Superficie y Tarjetas Estilo StreamingHD */
+.sh-card {
+  background: linear-gradient(135deg, rgba(7, 25, 51, 0.75) 0%, rgba(4, 19, 41, 0.85) 100%);
+  border: 1px solid rgba(168, 200, 255, 0.12);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sh-card:hover {
+  border-color: rgba(0, 210, 255, 0.35);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 210, 255, 0.12);
+}
+
+.ambient-glow {
+  position: absolute;
+  top: -30%;
+  right: -15%;
+  width: 55%;
+  aspect-ratio: 1;
+  background: radial-gradient(closest-side, rgba(0, 210, 255, 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+/* Scrollbar estilizada y suave para pestañas de administración */
+.custom-tabs-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 210, 255, 0.4) rgba(1, 14, 36, 0.7);
+  scroll-behavior: smooth;
+}
+.custom-tabs-scroll::-webkit-scrollbar {
+  height: 5px;
+}
+.custom-tabs-scroll::-webkit-scrollbar-track {
+  background: rgba(1, 14, 36, 0.7);
+  border-radius: 9999px;
+}
+.custom-tabs-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 210, 255, 0.35);
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 210, 255, 0.2);
+}
+.custom-tabs-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 210, 255, 0.7);
+}

@@ -1,0 +1,223 @@
+{
+  "version": "2.0",
+  "updatedAt": "2026-10-05T16:30:19.457Z",
+  "stationName": "Radio Puerto Quidico",
+  "streamUrl": "https://stream.zeno.fm/tf9zwn5vmd0uv",
+  "streamUrlHd": "https://stream.zeno.fm/tf9zwn5vmd0uv",
+  "streamUrlEco": "https://sonic.portalfoxmix.club/8320/;",
+  "emergencyAlert": {
+    "active": false,
+    "level": "urgente",
+    "title": "🌊 ALERTA DE MAREJADAS ANORMALES",
+    "message": "Aviso de la Autoridad Marítima: Fuertes rompientes y oleaje en Caleta Quidico y Borde Costero Tirúa. Prohibido el ingreso al mar y faenas náuticas.",
+    "source": "Capitanía de Puerto / Armada de Chile",
+    "updatedAt": "Desactivada hace instantes",
+    "actionLabel": "Escuchar Transmisión Oficial",
+    "timestamp": 1791217819436
+  },
+  "onAir": {
+    "currentSong": "Música Ranchera y Dedicatorias",
+    "currentArtist": "WhatsApp +569 6267 9087",
+    "currentShow": "DJ Dino se toma el dial en Quidico",
+    "currentHost": "DJ Dino",
+    "isLive": true,
+    "broadcastMode": "EN VIVO",
+    "genre": "Cumbia Ranchera Costera",
+    "lastUpdated": "Transmitiendo al aire",
+    "songHistory": [
+      {
+        "id": "sh-1",
+        "song": "Cómo Dejar de Amarte",
+        "artist": "Los Charros de Lumaco",
+        "time": "Ahora al aire",
+        "genre": "Cumbia Ranchera"
+      },
+      {
+        "id": "sh-2",
+        "song": "Un Amor Violento",
+        "artist": "Los Tres",
+        "time": "Hace 6 min",
+        "genre": "Rock Chileno"
+      },
+      {
+        "id": "sh-3",
+        "song": "El Embrujo",
+        "artist": "Américo",
+        "time": "Hace 11 min",
+        "genre": "Cumbia Tropical"
+      },
+      {
+        "id": "sh-4",
+        "song": "Juana María",
+        "artist": "Los Vásquez",
+        "time": "Hace 16 min",
+        "genre": "Pop Cebolla"
+      },
+      {
+        "id": "sh-5",
+        "song": "Vuelve Vuelve",
+        "artist": "Zalo Reyes",
+        "time": "Hace 21 min",
+        "genre": "Recuerdo y Balada"
+      },
+      {
+        "id": "sh-6",
+        "song": "Loco (Tu Forma de Ser)",
+        "artist": "Los Auténticos Decadentes",
+        "time": "Hace 26 min",
+        "genre": "Fiesta y Clásicos"
+      },
+      {
+        "id": "sh-7",
+        "song": "Vuela Una Lágrima",
+        "artist": "Los Nocheros",
+        "time": "Hace 31 min",
+        "genre": "Folklore Romántico"
+      },
+      {
+        "id": "sh-8",
+        "song": "Lejos del Amor",
+        "artist": "Illapu",
+        "time": "Hace 36 min",
+        "genre": "Raíz Latinoamericana"
+      }
+    ]
+  },
+  "maritimeWeather": {
+    "portStatus": "ABIERTO",
+    "portStatusDetail": "Abierto para embarcaciones menores dentro y fuera de la bahía",
+    "airTemp": "17°C",
+    "waterTemp": "13°C",
+    "condition": "Parcialmente Despejado",
+    "windSpeed": "12 Nudos",
+    "windDirection": "Sur-Suroeste (SSO)",
+    "waveHeight": "1.8 m",
+    "highTide": "14:20 hrs (1.6m)",
+    "lowTide": "20:45 hrs (0.4m)",
+    "lunarPhase": "Cuarto Creciente",
+    "advisory": "Condiciones favorables para faenas de pesca artesanal y recolección de orilla en Quidico y Tirúa.",
+    "updatedAt": "Hoy 08:30 hrs • Capitanía de Puerto",
+    "success": true,
+    "data": {
+      "portStatus": "ABIERTO",
+      "portStatusDetail": "Abierto para embarcaciones menores dentro y fuera de la bahía",
+      "airTemp": "16°C",
+      "waterTemp": "13°C",
+      "condition": "Nublado",
+      "windSpeed": "7 Nudos",
+      "windDirection": "Nor-Noroeste (NNO)",
+      "waveHeight": "1.5 m",
+      "wavePeriod": "9.4s",
+      "highTide": "09:20 hrs (1.6m)",
+      "lowTide": "15:45 hrs (0.4m)",
+      "lunarPhase": "Cuarto Menguante",
+      "advisory": "Condiciones normales para faenas de pesca artesanal y tránsito marítimo en Caleta Quidico y litoral de Tirúa.",
+      "updatedAt": "Hoy 01:30 p. m. hrs • Satélite Meteorológico & Boya Marítima",
+      "source": "Open-Meteo Marine / Capitanía de Puerto"
+    }
+  },
+  "schedule": [
+    {
+      "id": "prog-noticias-matinal",
+      "title": "Las Noticias en Puerto Quidico (Edición Matinal)",
+      "shortTitle": "Las Noticias (Edición Matinal)",
+      "host": "Departamento de Prensa",
+      "time": "06:00 - 09:00",
+      "startHour": 6,
+      "endHour": 9,
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado"
+      ],
+      "category": "Informativo Matinal",
+      "description": "De 6 a 9 de la mañana. Información que te conecta con lo que importa: información veraz, hechos locales, nacional e internacional y compromiso con nuestra gente en el nuevo dial 91.3 FM.",
+      "tag": "En Vivo Matinal",
+      "image": "/images/noticias-puerto-quidico.png",
+      "dial": "91.3 FM",
+      "featured": true
+    },
+    {
+      "id": "prog-noticias-mediodia",
+      "title": "Las Noticias en Puerto Quidico (Edición Mediodía)",
+      "shortTitle": "Las Noticias (Edición Mediodía)",
+      "host": "Departamento de Prensa",
+      "time": "12:00 - 13:00",
+      "startHour": 12,
+      "endHour": 13,
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado"
+      ],
+      "category": "Informativo Mediodía",
+      "description": "De 12 a 13:00 horas. Todo el pulso informativo de la jornada y el acontecer comunal de Quidico y Tirúa con nuestro equipo periodístico en el nuevo dial 91.3 FM.",
+      "tag": "Noticias Centrales",
+      "image": "/images/noticias-puerto-quidico.png",
+      "dial": "91.3 FM",
+      "featured": true
+    },
+    {
+      "id": "prog-surcando-el-lafken",
+      "title": "Surcando el Lafken",
+      "shortTitle": "Surcando el Lafken",
+      "host": "Luis Sandoval Antilao (Concejal de Tirúa)",
+      "time": "19:00 - 21:00",
+      "startHour": 19,
+      "endHour": 21,
+      "days": [
+        "Martes"
+      ],
+      "category": "Política e Información",
+      "description": "Todos los martes desde las 19:00 hrs. Política, territorio e información desde nuestra costa: análisis y opinión, debate, participación y las voces de nuestro territorio con Luis Sandoval Antilao por Radio Puerto Quidico 91.3 FM.",
+      "tag": "Política & Territorio",
+      "image": "/images/surcando-el-lafken.png",
+      "dial": "91.3 FM",
+      "featured": true
+    },
+    {
+      "id": "prog-dj-dino",
+      "title": "DJ Dino se toma el dial en Quidico",
+      "shortTitle": "DJ Dino en Vivo",
+      "host": "DJ Dino",
+      "time": "10:00 - 14:00",
+      "startHour": 10,
+      "endHour": 14,
+      "days": [
+        "Domingo"
+      ],
+      "category": "En Vivo Domingos",
+      "description": "Desde las 10 de la mañana hasta las 14:00 hrs, DJ Dino se toma el dial en Quidico acompañando tu domingo con la mejor música y dedicatorias al WhatsApp +569 6267 9087 en el dial 91.3 FM.",
+      "tag": "Especial Domingos",
+      "image": "/images/dj-dino-domingo.png",
+      "dial": "91.3 FM",
+      "phone": "+56962679087",
+      "featured": true
+    }
+  ],
+  "sponsors": [
+    {
+      "id": "sponsor-don-nica",
+      "name": "Comercializadora Don Nica",
+      "tagline": "Productos del Mar Congelados de la Mejor Calidad para tu Mesa y tu Negocio",
+      "description": "Productos del Mar Frescos y Congelados directamente extraídos de las costas de Quidico y Tirúa. Sierra, corvina, róbalo, reineta y mariscos seleccionados con cadena de frío garantizada.",
+      "phone": "+569 6267 9087",
+      "whatsappUrl": "https://wa.me/56962679087?text=Hola%20Don%20Nica,%20quiero%20hacer%20un%20pedido%20de%20mariscos%20desde%20Radio%20Quidico",
+      "instagramUrl": "https://www.instagram.com/donnicamar_cl/",
+      "image": "/images/originales_blog/auspiciador-don-nica.jpg",
+      "category": "Productos del Mar",
+      "tags": [
+        "Mariscos Seleccionados",
+        "Pescados del Día",
+        "Envíos a la Región"
+      ],
+      "clicks": 42
+    }
+  ]
+}
