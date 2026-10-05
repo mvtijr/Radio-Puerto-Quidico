@@ -234,8 +234,8 @@ export const RadioConfigProvider = ({ children }) => {
   const verifyPin = useCallback(async (candidate) => {
     if (!candidate) return false;
     const trimmed = candidate.toString().trim();
-    // 1. Coincidencia directa con adminPin
-    if (trimmed === adminPin) return true;
+    // 1. Coincidencia directa con adminPin (solo si es texto plano corto, no hash)
+    if (trimmed.length < 32 && trimmed === adminPin) return true;
     // 2. Hash criptográfico del candidato comparado con adminPin o hash predeterminado
     const candidateHash = await hashPin(trimmed);
     if (candidateHash === adminPin || candidateHash === DEFAULT_PIN_HASH) return true;

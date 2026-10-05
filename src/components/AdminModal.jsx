@@ -8,7 +8,6 @@ export const AdminModal = ({ isOpen, onClose }) => {
     config,
     saveConfig,
     resetConfig,
-    adminPin,
     updatePin,
     verifyPin,
     exportConfigJson,
@@ -26,14 +25,14 @@ export const AdminModal = ({ isOpen, onClose }) => {
   const [pinError, setPinError] = useState('');
   const [failedAttempts, setFailedAttempts] = useState(() => {
     try {
-      return parseInt(sessionStorage.getItem('radio_admin_failed_attempts_count') || '0', 10);
+      return parseInt(localStorage.getItem('radio_admin_failed_attempts_count') || sessionStorage.getItem('radio_admin_failed_attempts_count') || '0', 10);
     } catch {
       return 0;
     }
   });
   const [lockoutTimer, setLockoutTimer] = useState(() => {
     try {
-      const until = parseInt(sessionStorage.getItem('radio_admin_lockout_until_ts') || '0', 10);
+      const until = parseInt(localStorage.getItem('radio_admin_lockout_until_ts') || sessionStorage.getItem('radio_admin_lockout_until_ts') || '0', 10);
       const remaining = Math.ceil((until - Date.now()) / 1000);
       return remaining > 0 ? remaining : 0;
     } catch {
@@ -132,9 +131,9 @@ export const AdminModal = ({ isOpen, onClose }) => {
       setPinError('');
       setToastMessage('');
 
-      // Sincronizar bloqueo activo persistente ante recargas F5
+      // Sincronizar bloqueo activo persistente ante recargas F5 o nuevas pestañas
       try {
-        const until = parseInt(sessionStorage.getItem('radio_admin_lockout_until_ts') || '0', 10);
+        const until = parseInt(localStorage.getItem('radio_admin_lockout_until_ts') || sessionStorage.getItem('radio_admin_lockout_until_ts') || '0', 10);
         const remaining = Math.ceil((until - Date.now()) / 1000);
         if (remaining > 0) {
           setLockoutTimer(remaining);
@@ -179,9 +178,9 @@ export const AdminModal = ({ isOpen, onClose }) => {
   const handlePinSubmit = async (e) => {
     e.preventDefault();
 
-    // Comprobar bloqueo activo en sessionStorage
+    // Comprobar bloqueo activo en localStorage o sessionStorage
     try {
-      const until = parseInt(sessionStorage.getItem('radio_admin_lockout_until_ts') || '0', 10);
+      const until = parseInt(localStorage.getItem('radio_admin_lockout_until_ts') || sessionStorage.getItem('radio_admin_lockout_until_ts') || '0', 10);
       const remaining = Math.ceil((until - Date.now()) / 1000);
       if (remaining > 0) {
         setLockoutTimer(remaining);
@@ -197,6 +196,8 @@ export const AdminModal = ({ isOpen, onClose }) => {
       setFailedAttempts(0);
       setEnteredPin('');
       try {
+        localStorage.removeItem('radio_admin_lockout_until_ts');
+        localStorage.removeItem('radio_admin_failed_attempts_count');
         sessionStorage.removeItem('radio_admin_lockout_until_ts');
         sessionStorage.removeItem('radio_admin_failed_attempts_count');
       } catch {}
@@ -204,6 +205,7 @@ export const AdminModal = ({ isOpen, onClose }) => {
       const nextAttempts = failedAttempts + 1;
       setFailedAttempts(nextAttempts);
       try {
+        localStorage.setItem('radio_admin_failed_attempts_count', String(nextAttempts));
         sessionStorage.setItem('radio_admin_failed_attempts_count', String(nextAttempts));
       } catch {}
 
@@ -213,6 +215,7 @@ export const AdminModal = ({ isOpen, onClose }) => {
         const penalty = nextAttempts === 4 ? 45 : nextAttempts === 5 ? 90 : 300;
         const lockoutUntil = Date.now() + penalty * 1000;
         try {
+          localStorage.setItem('radio_admin_lockout_until_ts', String(lockoutUntil));
           sessionStorage.setItem('radio_admin_lockout_until_ts', String(lockoutUntil));
         } catch {}
         setLockoutTimer(penalty);
