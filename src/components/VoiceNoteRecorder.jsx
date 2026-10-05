@@ -17,6 +17,32 @@ export const VoiceNoteRecorder = ({ onClose }) => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [waveLevels, setWaveLevels] = useState(Array(18).fill(20));
 
+  // Cooldown Antispam (45 segundos) para proteger la cabina
+  const COOLDOWN_SECONDS = 45;
+  const [cooldownRemaining, setCooldownRemaining] = useState(() => {
+    try {
+      const last = parseInt(localStorage.getItem('rpq_last_request_sent_ts') || '0', 10);
+      const remaining = Math.ceil((last + COOLDOWN_SECONDS * 1000 - Date.now()) / 1000);
+      return remaining > 0 ? remaining : 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  useEffect(() => {
+    if (cooldownRemaining <= 0) return;
+    const interval = setInterval(() => {
+      setCooldownRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cooldownRemaining]);
+
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const timerIntervalRef = useRef(null);
@@ -198,6 +224,12 @@ export const VoiceNoteRecorder = ({ onClose }) => {
   // Enviar audio a la cabina
   const handleSendVoiceNote = async () => {
     if (!audioBlob) return;
+    if (cooldownRemaining > 0) return;
+
+    try {
+      localStorage.setItem('rpq_last_request_sent_ts', Date.now().toString());
+      setCooldownRemaining(COOLDOWN_SECONDS);
+    } catch {}
 
     const rawNumber = (currentConfig.contact?.whatsapp || '56962679087').replace(/[^0-9]/g, '');
     const senderName = name.trim() || 'Auditor de Quidico';
@@ -417,16 +449,39 @@ export const VoiceNoteRecorder = ({ onClose }) => {
         )}
       </div>
 
-      {/* Botón de Envío Directo a WhatsApp */}
+      {/* Botón de Envío Directo a WhatsApp con Cooldown Antispam */}
       {recorderState === 'recorded' && (
-        <button
-          type="button"
-          onClick={handleSendVoiceNote}
-          className="w-full bg-[#f6bf22] hover:bg-[#ffdf99] text-[#3f2e00] font-['Oswald',sans-serif] font-bold text-sm uppercase py-3.5 px-6 rounded-2xl shadow-[0_4px_24px_rgba(246,191,34,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 animate-fadeIn"
-        >
-          <i className="fa-brands fa-whatsapp text-xl"></i>
-          <span>Enviar Nota de Voz al WhatsApp de Cabina</span>
-        </button>
+        <div className="space-y-2 animate-fadeIn">
+          <button
+            type="button"
+            disabled={cooldownRemaining > 0}
+            onClick={handleSendVoiceNote}
+            className={`w-full font-['Oswald',sans-serif] font-bold text-sm uppercase py-3.5 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 ${
+              cooldownRemaining > 0
+                ? 'bg-[#1c2a41] text-[#8a919f] border border-[#a8c8ff]/20 cursor-not-allowed opacity-80'
+                : 'bg-[#f6bf22] hover:bg-[#ffdf99] text-[#3f2e00] shadow-[0_4px_24px_rgba(246,191,34,0.4)] hover:scale-[1.02] active:scale-[0.98] cursor-pointer'
+            }`}
+          >
+            {cooldownRemaining > 0 ? (
+              <>
+                <i className="fa-solid fa-hourglass-half text-amber-400 text-sm animate-pulse"></i>
+                <span>Espera {cooldownRemaining}s para volver a enviar nota</span>
+              </>
+            ) : (
+              <>
+                <i className="fa-brands fa-whatsapp text-xl"></i>
+                <span>Enviar Nota de Voz al WhatsApp de Cabina</span>
+              </>
+            )}
+          </button>
+
+          {cooldownRemaining > 0 && (
+            <p className="text-[11px] text-amber-300/90 font-['Inter',sans-serif] text-center flex items-center justify-center gap-1.5 py-1 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3">
+              <i className="fa-solid fa-shield-halved text-amber-400 text-xs"></i>
+              <span>Protección antispam activa en cabina. Podrás enviar otro audio en <strong>{cooldownRemaining}s</strong>.</span>
+            </p>
+          )}
+        </div>
       )}
 
       {/* Nota de Ayuda Comunitaria */}

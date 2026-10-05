@@ -18,12 +18,23 @@ export const AudioProvider = ({ children }) => {
   });
   const [qualityToast, setQualityToast] = useState(null);
 
-  const getActiveStreamUrl = useCallback((quality = audioQuality) => {
+  // Servidor de streaming activo: 'primary' (Zeno FM) | 'backup' (SonicPanel)
+  const [activeServer, setActiveServer] = useState('primary');
+  const activeServerRef = useRef('primary');
+
+  useEffect(() => {
+    activeServerRef.current = activeServer;
+  }, [activeServer]);
+
+  const getActiveStreamUrl = useCallback((quality = audioQuality, server = activeServer) => {
+    if (server === 'backup') {
+      return currentFallbackUrl || 'https://sonic.portalfoxmix.club/8320/;';
+    }
     if (quality === 'ECO') {
       return config?.streamUrlEco || config?.streamUrl || RADIO_CONFIG.streamUrl;
     }
     return config?.streamUrlHd || config?.streamUrl || RADIO_CONFIG.streamUrl;
-  }, [config, audioQuality]);
+  }, [config, audioQuality, activeServer, currentFallbackUrl]);
 
   // 'live' o 'podcast'
   const [playbackMode, setPlaybackMode] = useState('live');
@@ -63,7 +74,7 @@ export const AudioProvider = ({ children }) => {
   const executeConnectRef = useRef(null);
   const handleStreamFailureRef = useRef(null);
 
-  // Manejo de fallo con reintento exponencial adaptativo para zonas rurales
+  // Manejo de fallo con conmutación failover invisible (Principal -> Respaldo en 3s)
   const handleStreamFailure = useCallback(() => {
     // Si el usuario pausó intencionalmente, no forzar reconexión
     if (!userIntendedPlayRef.current || playbackMode !== 'live') {
@@ -83,6 +94,26 @@ export const AudioProvider = ({ children }) => {
       return;
     }
 
+    // FAILOVER AUTOMÁTICO: Si estamos en el servidor principal, conmutar inmediatamente a Respaldo
+    if (activeServerRef.current === 'primary') {
+      console.warn("[AudioContext] Falla en servidor principal detectada. Activando conmutación Failover a Servidor de Respaldo...");
+      setActiveServer('backup');
+      activeServerRef.current = 'backup';
+      setIsReconnecting(true);
+      setIsLoading(true);
+      setQualityToast("⚡ Señal principal inestable. Conmutando automáticamente a Servidor de Respaldo (SonicPanel)...");
+
+      const backupUrl = currentFallbackUrl || 'https://sonic.portalfoxmix.club/8320/;';
+      if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = setTimeout(() => {
+        if (executeConnectRef.current) {
+          executeConnectRef.current(backupUrl, true);
+        }
+      }, 600);
+      return;
+    }
+
+    // Si falló en el servidor de respaldo, intentar reconectar con reintentos exponenciales
     if (reconnectAttemptsRef.current < 3) {
       reconnectAttemptsRef.current += 1;
       const attempt = reconnectAttemptsRef.current;
@@ -90,15 +121,17 @@ export const AudioProvider = ({ children }) => {
       setIsReconnecting(true);
       setIsLoading(true);
 
-      const delay = attempt === 1 ? 2500 : attempt === 2 ? 5000 : 9000;
-      setQualityToast(`🔄 Reconectando señal en vivo (intento ${attempt}/3)...`);
+      const delay = attempt === 1 ? 2000 : attempt === 2 ? 4000 : 7000;
+      setQualityToast(`🔄 Reconectando señal de respaldo (intento ${attempt}/3)...`);
 
       if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current);
       retryTimeoutRef.current = setTimeout(() => {
-        // En el 3er intento, probar fallback si existe
-        const targetUrl = (attempt === 3 && currentFallbackUrl)
-          ? currentFallbackUrl
-          : getActiveStreamUrl();
+        // En el 3er intento, intentar volver al servidor principal por si ya retornó
+        if (attempt === 3) {
+          setActiveServer('primary');
+          activeServerRef.current = 'primary';
+        }
+        const targetUrl = getActiveStreamUrl();
         if (executeConnectRef.current) {
           executeConnectRef.current(targetUrl, true);
         }
@@ -148,8 +181,11 @@ export const AudioProvider = ({ children }) => {
           stallCountRef.current = 0;
 
           if (isRetry) {
-            setQualityToast("✓ Transmisión en vivo restablecida");
-            setTimeout(() => setQualityToast(null), 3000);
+            const serverLabel = activeServerRef.current === 'backup' 
+              ? 'Servidor de Respaldo (SonicPanel)' 
+              : 'Servidor Principal';
+            setQualityToast(`✓ Transmitiendo en vivo vía ${serverLabel}`);
+            setTimeout(() => setQualityToast(null), 3500);
           }
         })
         .catch((err) => {
@@ -282,7 +318,7 @@ export const AudioProvider = ({ children }) => {
     };
   }, [playbackMode]);
 
-  // Watchdog de congelamiento para stream en vivo: detecta si el audio se quedó mudo sin disparar error
+  // Watchdog de congelamiento para stream en vivo: detecta en 3 segundos si el audio se quedó mudo
   useEffect(() => {
     if (playbackMode !== 'live' || !isPlaying) {
       if (stallWatchdogRef.current) clearInterval(stallWatchdogRef.current);
@@ -294,21 +330,30 @@ export const AudioProvider = ({ children }) => {
       if (!audio || audio.paused) return;
 
       const current = audio.currentTime;
+      // Si el tiempo de reproducción no avanza
       if (current === lastCurrentTimeRef.current && !audio.ended && isPlaying) {
         stallCountRef.current += 1;
-        // Si no avanza durante 12 segundos consecutivos (3 ticks de 4s), refrescar el socket
+        // Si no avanza durante 3 segundos consecutivos
         if (stallCountRef.current >= 3) {
-          console.warn("[AudioContext] Watchdog: Stream congelado por 12s, refrescando buffer...");
+          console.warn("[AudioContext] Watchdog: Señal congelada por 3s consecutivos. Iniciando failover...");
           stallCountRef.current = 0;
           if (navigator.onLine && userIntendedPlayRef.current) {
-            executeConnect(getActiveStreamUrl(), true);
+            if (activeServerRef.current === 'primary') {
+              // Conmutar a respaldo
+              if (handleStreamFailureRef.current) {
+                handleStreamFailureRef.current();
+              }
+            } else {
+              // Ya está en respaldo, refrescar buffer
+              executeConnect(getActiveStreamUrl(), true);
+            }
           }
         }
       } else {
         stallCountRef.current = 0;
         lastCurrentTimeRef.current = current;
       }
-    }, 4000);
+    }, 1000);
 
     return () => {
       if (stallWatchdogRef.current) {
@@ -474,6 +519,21 @@ export const AudioProvider = ({ children }) => {
     }
   };
 
+  // Conmutar manualmente entre Servidor Principal (Zeno FM) y Servidor de Respaldo (SonicPanel)
+  const switchServer = useCallback((targetServer) => {
+    if (targetServer !== 'primary' && targetServer !== 'backup') return;
+    setActiveServer(targetServer);
+    activeServerRef.current = targetServer;
+    const serverLabel = targetServer === 'primary' 
+      ? 'Servidor Principal (Zeno FM)' 
+      : 'Servidor de Respaldo (SonicPanel)';
+    setQualityToast(`🔄 Conectando con ${serverLabel}...`);
+    const targetUrl = getActiveStreamUrl(audioQuality, targetServer);
+    if (isPlaying || userIntendedPlayRef.current) {
+      executeConnect(targetUrl, true);
+    }
+  }, [audioQuality, getActiveStreamUrl, isPlaying, executeConnect]);
+
   const toggleMute = () => {
     setIsMuted(prev => !prev);
   };
@@ -488,6 +548,9 @@ export const AudioProvider = ({ children }) => {
         retryCount,
         isNetworkOffline,
         streamError,
+        activeServer,
+        switchServer,
+        isFailoverActive: activeServer === 'backup',
         volume,
         isMuted,
         currentPodcast,

@@ -18,6 +18,7 @@ import { PWAInstallModal } from './components/PWAInstallModal';
 import { AdvertisingRatesModal } from './components/AdvertisingRatesModal';
 import { SongHistoryModal } from './components/SongHistoryModal';
 import { SleepTimerModal } from './components/SleepTimerModal';
+import { CarModeModal } from './components/CarModeModal';
 import { usePWAInstall } from './hooks/usePWAInstall';
 import { FluidFieldBackground } from '@/components/ui/fluid-field';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -32,6 +33,7 @@ function AppContent() {
   const [isAdvertisingModalOpen, setIsAdvertisingModalOpen] = useState(false);
   const [isSongHistoryOpen, setIsSongHistoryOpen] = useState(false);
   const [isSleepTimerOpen, setIsSleepTimerOpen] = useState(false);
+  const [isCarModeOpen, setIsCarModeOpen] = useState(false);
 
   const { isInstallable, isInstalled, isIOS, triggerInstall } = usePWAInstall();
 
@@ -78,6 +80,7 @@ function AppContent() {
         onOpenMaritimeModal={() => setIsMaritimeModalOpen(true)}
         onOpenPWAInstall={() => setIsPWAInstallModalOpen(true)}
         onOpenAdminModal={() => setIsAdminModalOpen(true)}
+        onOpenCarMode={() => setIsCarModeOpen(true)}
         activeSection={activeSection}
         onScrollTo={scrollToSection}
       />
@@ -133,6 +136,17 @@ function AppContent() {
         onOpenRequestModal={handleOpenRequestModal}
         onOpenSongHistory={() => setIsSongHistoryOpen(true)}
         onOpenSleepTimer={() => setIsSleepTimerOpen(true)}
+        onOpenCarMode={() => setIsCarModeOpen(true)}
+      />
+
+      {/* Modo Auto / Bote (Conducción en Ruta P-72S y Navegación Marítima) */}
+      <CarModeModal 
+        isOpen={isCarModeOpen}
+        onClose={() => setIsCarModeOpen(false)}
+        onOpenVoiceRequest={() => {
+          setIsCarModeOpen(false);
+          handleOpenRequestModal('voice');
+        }}
       />
 
       {/* Modal de Historial de Canciones Emitidas */}

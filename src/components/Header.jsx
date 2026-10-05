@@ -4,7 +4,7 @@ import { useAudio } from '../context/AudioContext';
 import { useRadioConfig } from '../context/RadioConfigContext';
 import { EmergencyBanner } from './EmergencyBanner';
 
-export const Header = ({ onOpenRequestModal, onOpenMaritimeModal, onOpenPWAInstall, onOpenAdminModal, activeSection, onScrollTo }) => {
+export const Header = ({ onOpenRequestModal, onOpenMaritimeModal, onOpenPWAInstall, onOpenAdminModal, onOpenCarMode, activeSection, onScrollTo }) => {
   const { isPlaying, togglePlayLive } = useAudio();
   const { config } = useRadioConfig();
   const currentConfig = config || RADIO_CONFIG;
@@ -196,6 +196,17 @@ export const Header = ({ onOpenRequestModal, onOpenMaritimeModal, onOpenPWAInsta
               <span>Instalar App</span>
             </button>
 
+            {/* Botón Modo Auto / Bote */}
+            <button
+              type="button"
+              onClick={onOpenCarMode}
+              title="Modo Auto / Bote (Interfaz gigante para conducción en Ruta P-72S y navegación en lanchas)"
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#071933]/90 hover:bg-[#00d2ff]/20 border border-[#00d2ff]/40 hover:border-[#00d2ff] text-[#00d2ff] hover:text-white text-xs font-['Montserrat',sans-serif] font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer whitespace-nowrap"
+            >
+              <i className="fa-solid fa-car-side text-xs text-[#00d2ff]"></i>
+              <span>Auto/Bote</span>
+            </button>
+
             {/* Botón Pedir Tema (Píldora dorada prominente) */}
             <button
               onClick={onOpenRequestModal}
@@ -288,6 +299,23 @@ export const Header = ({ onOpenRequestModal, onOpenMaritimeModal, onOpenPWAInsta
                 weather.portStatus === 'ABIERTO' ? 'bg-emerald-400 text-[#003543]' : 'bg-rose-500 text-white'
               }`}>
                 ⚓ {weather.portStatus || 'ABIERTO'}
+              </span>
+            </button>
+
+            {/* Botón Modo Auto / Bote Móvil */}
+            <button
+              onClick={() => {
+                if (onOpenCarMode) onOpenCarMode();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold text-[#00d2ff] bg-[#071933] hover:bg-[#00d2ff]/20 border border-[#00d2ff]/40 flex items-center justify-between shadow-md transition-all cursor-pointer"
+            >
+              <span className="flex items-center gap-2 font-['Montserrat',sans-serif]">
+                <i className="fa-solid fa-car-side text-[#00d2ff] text-sm"></i>
+                <span>MODO AUTO / BOTE (PANTALLA GIGANTE)</span>
+              </span>
+              <span className="text-[10px] bg-[#00d2ff]/20 text-[#00d2ff] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                1 TOQUE
               </span>
             </button>
 

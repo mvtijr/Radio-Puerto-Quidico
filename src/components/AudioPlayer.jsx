@@ -5,7 +5,7 @@ import { useRadioConfig } from '../context/RadioConfigContext';
 import { RADIO_CONFIG } from '../config/radioConfig';
 import { useOnAirMetadata } from '../hooks/useOnAirMetadata';
 
-export const AudioPlayer = ({ onOpenRequestModal, onOpenSongHistory, onOpenSleepTimer }) => {
+export const AudioPlayer = ({ onOpenRequestModal, onOpenSongHistory, onOpenSleepTimer, onOpenCarMode }) => {
   const { config } = useRadioConfig();
   const currentConfig = config || RADIO_CONFIG;
   const {
@@ -20,6 +20,9 @@ export const AudioPlayer = ({ onOpenRequestModal, onOpenSongHistory, onOpenSleep
     isReconnecting,
     retryCount,
     isNetworkOffline,
+    activeServer,
+    switchServer,
+    isFailoverActive,
     reconnectStream,
     audioQuality,
     setAudioQuality,
@@ -108,6 +111,17 @@ export const AudioPlayer = ({ onOpenRequestModal, onOpenSongHistory, onOpenSleep
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         Al Aire
                       </span>
+                    )}
+                    {isFailoverActive && !isReconnecting && (
+                      <button
+                        type="button"
+                        onClick={() => switchServer('primary')}
+                        title="Transmitiendo en Servidor de Respaldo (SonicPanel). Clic para volver a Principal"
+                        className="text-[9px] text-amber-300 bg-amber-500/20 border border-amber-400/40 px-2 py-0.2 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer animate-pulse hover:bg-amber-500/30"
+                      >
+                        <i className="fa-solid fa-shield-halved text-[9px] text-amber-400"></i>
+                        <span>Respaldo</span>
+                      </button>
                     )}
                     {isReconnecting && (
                       <span className="text-[10px] text-amber-400 font-['Montserrat',sans-serif] uppercase font-bold tracking-wider flex items-center gap-1 bg-amber-400/10 px-2 py-0.2 rounded-full border border-amber-400/30 animate-pulse">
@@ -210,6 +224,17 @@ export const AudioPlayer = ({ onOpenRequestModal, onOpenSongHistory, onOpenSleep
                 <i className="fa-solid fa-share-nodes"></i>
               </button>
 
+              {/* Botón Modo Auto / Bote */}
+              <button
+                type="button"
+                onClick={() => onOpenCarMode && onOpenCarMode()}
+                className="text-[#00d2ff] hover:text-white bg-[#00d2ff]/10 hover:bg-[#00d2ff]/25 border border-[#00d2ff]/30 transition-all text-xs px-2 sm:px-2.5 py-1 rounded-full flex items-center gap-1.5 cursor-pointer shadow-sm"
+                title="Abrir Modo Auto / Bote (Interfaz gigante de alta visibilidad para conducción en Ruta P-72S y faenas marítimas)"
+              >
+                <i className="fa-solid fa-car-side text-xs text-[#00d2ff]"></i>
+                <span className="hidden sm:inline text-[10px] font-['Montserrat',sans-serif] font-bold uppercase tracking-wider">Auto/Bote</span>
+              </button>
+
               {/* Botón Principal Play / Pause */}
               <button
                 onClick={togglePlayLive}
@@ -257,6 +282,20 @@ export const AudioPlayer = ({ onOpenRequestModal, onOpenSongHistory, onOpenSleep
 
             {/* Selector de Frecuencias y Calidad en Píldoras */}
             <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-['Montserrat',sans-serif] tracking-wider">
+              {/* Conmutador Servidor Principal vs Respaldo */}
+              <button
+                type="button"
+                onClick={() => switchServer(activeServer === 'primary' ? 'backup' : 'primary')}
+                title={`Servidor streaming: ${activeServer === 'primary' ? 'Zeno FM (Principal)' : 'SonicPanel (Respaldo)'}. Clic para alternar.`}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase transition-all flex items-center gap-1 cursor-pointer border ${
+                  activeServer === 'backup'
+                    ? 'bg-amber-400/20 text-[#f6bf22] border-amber-400/40 shadow-sm animate-pulse'
+                    : 'bg-[#071933] text-[#a5e7ff] hover:text-white border-[#a8c8ff]/15'
+                }`}
+              >
+                <i className="fa-solid fa-tower-broadcast text-[9px]"></i>
+                <span>{activeServer === 'backup' ? 'Respaldo' : 'Principal'}</span>
+              </button>
               <button
                 onClick={() => setSelectedFreq('105.1')}
                 className={`px-3 py-1 rounded-full transition-all font-bold text-[11px] cursor-pointer ${

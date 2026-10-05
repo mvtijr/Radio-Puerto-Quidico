@@ -11,9 +11,41 @@ export const SongRequestModal = ({ isOpen, onClose, initialTab = 'text' }) => {
   const [details, setDetails] = useState('');
   const [copied, setCopied] = useState(false);
 
+  // Cooldown Antispam (45 segundos) para proteger la cabina
+  const COOLDOWN_SECONDS = 45;
+  const [cooldownRemaining, setCooldownRemaining] = useState(() => {
+    try {
+      const last = parseInt(localStorage.getItem('rpq_last_request_sent_ts') || '0', 10);
+      const remaining = Math.ceil((last + COOLDOWN_SECONDS * 1000 - Date.now()) / 1000);
+      return remaining > 0 ? remaining : 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  useEffect(() => {
+    if (cooldownRemaining <= 0) return;
+    const interval = setInterval(() => {
+      setCooldownRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cooldownRemaining]);
+
   useEffect(() => {
     if (isOpen) {
       setActiveMode(initialTab || 'text');
+      // Recalcular cooldown al abrir por si transcurrió el tiempo
+      try {
+        const last = parseInt(localStorage.getItem('rpq_last_request_sent_ts') || '0', 10);
+        const remaining = Math.ceil((last + COOLDOWN_SECONDS * 1000 - Date.now()) / 1000);
+        setCooldownRemaining(remaining > 0 ? remaining : 0);
+      } catch {}
     }
   }, [isOpen, initialTab]);
 
@@ -37,6 +69,13 @@ export const SongRequestModal = ({ isOpen, onClose, initialTab = 'text' }) => {
 
   const handleSendWhatsApp = (e) => {
     e.preventDefault();
+    if (cooldownRemaining > 0) return;
+
+    try {
+      localStorage.setItem('rpq_last_request_sent_ts', Date.now().toString());
+      setCooldownRemaining(COOLDOWN_SECONDS);
+    } catch {}
+
     const rawNumber = (config.contact?.whatsapp || '56962679087').replace(/[^0-9]/g, '');
     const message = buildWhatsAppMessage();
     const url = `https://wa.me/${rawNumber}?text=${encodeURIComponent(message)}`;
@@ -226,10 +265,24 @@ export const SongRequestModal = ({ isOpen, onClose, initialTab = 'text' }) => {
             <div className="pt-2 flex flex-col sm:flex-row gap-2">
               <button
                 type="submit"
-                className="flex-1 flex items-center justify-center gap-2 bg-[#f6bf22] hover:bg-[#ffdf99] text-[#3f2e00] font-['Oswald',sans-serif] font-bold text-sm uppercase py-3 px-5 rounded-xl shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                disabled={cooldownRemaining > 0}
+                className={`flex-1 flex items-center justify-center gap-2 font-['Oswald',sans-serif] font-bold text-sm uppercase py-3 px-5 rounded-xl shadow-lg transition-all ${
+                  cooldownRemaining > 0
+                    ? 'bg-[#1c2a41] text-[#8a919f] border border-[#a8c8ff]/20 cursor-not-allowed opacity-80'
+                    : 'bg-[#f6bf22] hover:bg-[#ffdf99] text-[#3f2e00] hover:scale-[1.02] active:scale-[0.98] cursor-pointer'
+                }`}
               >
-                <i className="fa-brands fa-whatsapp text-lg"></i>
-                <span>Enviar a WhatsApp ({config.contact?.whatsappDisplay || '+569 6267 9087'})</span>
+                {cooldownRemaining > 0 ? (
+                  <>
+                    <i className="fa-solid fa-hourglass-half text-amber-400 text-sm animate-pulse"></i>
+                    <span>Espera {cooldownRemaining}s para volver a enviar</span>
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Enviar a WhatsApp ({config.contact?.whatsappDisplay || '+569 6267 9087'})</span>
+                  </>
+                )}
               </button>
 
               <button
@@ -241,6 +294,13 @@ export const SongRequestModal = ({ isOpen, onClose, initialTab = 'text' }) => {
                 <span>{copied ? 'Copiado' : 'Copiar'}</span>
               </button>
             </div>
+
+            {cooldownRemaining > 0 && (
+              <p className="text-[11px] text-amber-300/90 font-['Inter',sans-serif] text-center flex items-center justify-center gap-1.5 pt-1 bg-amber-500/10 border border-amber-500/20 rounded-xl py-2 px-3">
+                <i className="fa-solid fa-shield-halved text-amber-400 text-xs"></i>
+                <span>Protección antispam de cabina activa. Podrás enviar otra solicitud en <strong>{cooldownRemaining}s</strong>.</span>
+              </p>
+            )}
           </form>
         )}
 

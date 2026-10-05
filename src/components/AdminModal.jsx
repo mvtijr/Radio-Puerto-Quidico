@@ -437,6 +437,30 @@ export const AdminModal = ({ isOpen, onClose }) => {
     showToast("📱 Compartiendo parámetros vía WhatsApp");
   };
 
+  const handleCopyRadioGardenData = () => {
+    const text = `📻 FICHA DE REGISTRO OFICIAL - RADIO GARDEN & TUNEIN\n` +
+      `=====================================================\n` +
+      `• Nombre de la Estación: ${formData.stationName || 'Radio Puerto Quidico'}\n` +
+      `• Frecuencia / Dial: ${formData.frequencyPrimary || '105.1 FM'} (Quidico) / ${formData.frequencySecondary || '91.3 FM'} (Tirúa Costa)\n` +
+      `• Localidad: Caleta Quidico, Comuna de Tirúa\n` +
+      `• Provincia / Región: Provincia de Arauco, Región del Biobío\n` +
+      `• País: Chile\n` +
+      `• Coordenadas Geográficas: Latitud -38.2434, Longitud -73.4928\n` +
+      `• URL Stream Principal MP3: ${formData.streamUrl || 'https://stream.zeno.fm/tf9zwn5vmd0uv'}\n` +
+      `• URL Stream Respaldo (Fallback): ${formData.fallbackStreamUrl || 'https://sonic.portalfoxmix.club/8320/;'}\n` +
+      `• Sitio Web Oficial: https://radio-puerto-quidico.vercel.app\n` +
+      `• URL Logo Oficial HD: https://radio-puerto-quidico.vercel.app/images/logo-radio-puerto-quidico.jpg\n` +
+      `• Slogan: ${formData.slogan || 'Tu Radio de Siempre • La Costa de Arauco al Mundo'}\n` +
+      `• Género Musical: Cumbia Ranchera, Folklore Chileno, Variedad y Noticias Costeras\n` +
+      `• Idioma: Español (Spanish)\n` +
+      `• Email de Contacto: ${formData.contact?.email || 'puertoquidico@gmail.com'}\n` +
+      `• Teléfono / WhatsApp: ${formData.contact?.whatsapp || '+56962679087'}\n` +
+      `=====================================================\n` +
+      `¡Listo para enviar a http://radio.garden/add o https://tunein.com/broadcasters/!`;
+    navigator.clipboard.writeText(text);
+    showToast("📋 Ficha técnica para Radio Garden copiada al portapapeles");
+  };
+
   const startMicTest = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1174,6 +1198,97 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                           className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#00d2ff]"
                         />
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Registro Oficial en Radio Garden & TuneIn */}
+                  <div className="bg-gradient-to-r from-[#003543]/60 via-[#112036] to-[#010e24] p-5 rounded-2xl border border-emerald-400/40 shadow-xl space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#a8c8ff]/15">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shadow">
+                          <i className="fa-solid fa-earth-americas"></i>
+                        </div>
+                        <div>
+                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase mb-0.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Presencia Mundial • Punto Verde Satelital
+                          </div>
+                          <h4 className="text-sm sm:text-base font-bold text-white uppercase tracking-wide">
+                            Registro Oficial en Radio Garden & TuneIn
+                          </h4>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleCopyRadioGardenData}
+                        className="bg-emerald-500 hover:bg-emerald-400 text-[#003543] font-bold text-xs uppercase px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer shadow transition-all hover:scale-105 active:scale-95 shrink-0 self-start sm:self-auto"
+                      >
+                        <i className="fa-solid fa-copy"></i>
+                        <span>Copiar Ficha Completa</span>
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-[#c0c6d6] leading-relaxed">
+                      Inscribe el streaming en <strong className="text-white">radio.garden</strong> (la plataforma global donde la gente gira el globo terráqueo en 3D para escuchar radios del mundo) y en <strong className="text-white">TuneIn</strong>.
+                      Caleta Quidico aparecerá con su punto verde en el mapa satelital chileno para que vecinos que migraron a Santiago, Concepción o el extranjero puedan sintonizar la radio girando el planeta desde su celular.
+                    </p>
+
+                    {/* Resumen de Datos Técnicos Pre-formateados */}
+                    <div className="bg-[#010e24]/90 p-4 rounded-xl border border-[#a8c8ff]/15 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-[11px]">
+                      <div>
+                        <span className="text-[#8a919f] block uppercase text-[9px] font-sans font-bold">Estación & Dial:</span>
+                        <span className="text-white font-bold">{formData.stationName || 'Radio Puerto Quidico'} ({formData.frequencyPrimary || '105.1 FM'})</span>
+                      </div>
+                      <div>
+                        <span className="text-[#8a919f] block uppercase text-[9px] font-sans font-bold">Ubicación & País:</span>
+                        <span className="text-white">Caleta Quidico, Tirúa, Chile</span>
+                      </div>
+                      <div>
+                        <span className="text-[#8a919f] block uppercase text-[9px] font-sans font-bold">Coordenadas 3D:</span>
+                        <span className="text-emerald-400 font-bold">-38.2434, -73.4928</span>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <span className="text-[#8a919f] block uppercase text-[9px] font-sans font-bold">Stream MP3 Directo:</span>
+                        <span className="text-[#a5e7ff] truncate block" title={formData.streamUrl}>{formData.streamUrl || 'https://stream.zeno.fm/tf9zwn5vmd0uv'}</span>
+                      </div>
+                      <div>
+                        <span className="text-[#8a919f] block uppercase text-[9px] font-sans font-bold">Web Oficial:</span>
+                        <span className="text-white">https://radio-puerto-quidico.vercel.app</span>
+                      </div>
+                    </div>
+
+                    {/* Enlaces de Envío Directo */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      <a
+                        href="http://radio.garden/add"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-[#071933] hover:bg-[#0e274b] text-[#00d2ff] hover:text-white border border-[#00d2ff]/40 text-xs font-bold uppercase px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow"
+                      >
+                        <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        <span>1. Formulario Radio Garden (radio.garden/add)</span>
+                      </a>
+
+                      <a
+                        href="https://tunein.com/broadcasters/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-[#071933] hover:bg-[#0e274b] text-[#f6bf22] hover:text-white border border-[#f6bf22]/40 text-xs font-bold uppercase px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow"
+                      >
+                        <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        <span>2. Registro en TuneIn Broadcasters</span>
+                      </a>
+
+                      <a
+                        href="https://www.radio-browser.info/add"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-[#071933] hover:bg-[#0e274b] text-[#a5e7ff] hover:text-white border border-[#a8c8ff]/30 text-xs font-bold uppercase px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow"
+                      >
+                        <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        <span>3. Directorio Abierto Radio-Browser</span>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -3074,6 +3189,36 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                         <li><strong>Instalar App:</strong> Los oyentes pueden pulsar "Instalar App" para tener el logo de Radio Quidico directamente en su pantalla de inicio.</li>
                         <li><strong>Micrófono Abierto:</strong> Los vecinos pueden grabar audios de hasta 60 segundos con visualizador y enviártelos por WhatsApp para salir al aire.</li>
                         <li><strong>Respaldos:</strong> Descarga siempre un archivo JSON en "Respaldos & PIN" para no perder ninguna modificación.</li>
+                      </ul>
+                    </div>
+
+                    {/* Tarjeta 7: Radio Garden & TuneIn */}
+                    <div className="bg-[#112036]/60 p-4 rounded-2xl border border-[#a8c8ff]/15 space-y-2">
+                      <div className="flex items-center gap-2 text-white font-bold text-xs uppercase">
+                        <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+                          7
+                        </div>
+                        <span>🌍 Punto Verde en Radio Garden & TuneIn</span>
+                      </div>
+                      <ul className="text-xs text-[#c0c6d6] space-y-1.5 pl-8 list-disc">
+                        <li><strong>Globo 3D:</strong> Inscribe la radio para que aparezca el punto verde de Caleta Quidico en <a href="http://radio.garden/add" target="_blank" rel="noopener noreferrer" className="text-[#00d2ff] underline">radio.garden</a>.</li>
+                        <li><strong>1 Clic de Copiado:</strong> En la pestaña "Emisora & Streaming", pulsa "Copiar Ficha Completa" y pégala en los formularios oficiales.</li>
+                        <li><strong>Conexión Global:</strong> Familiares en Santiago, Concepción o el extranjero podrán sintonizar girando el planeta desde su celular.</li>
+                      </ul>
+                    </div>
+
+                    {/* Tarjeta 8: Modo Auto / Bote y Streaming Failover */}
+                    <div className="bg-[#112036]/60 p-4 rounded-2xl border border-[#a8c8ff]/15 space-y-2">
+                      <div className="flex items-center gap-2 text-white font-bold text-xs uppercase">
+                        <div className="w-6 h-6 rounded-lg bg-[#00d2ff]/20 text-[#00d2ff] flex items-center justify-center text-xs">
+                          8
+                        </div>
+                        <span>🚗 Modo Auto / Bote & Failover Redundante</span>
+                      </div>
+                      <ul className="text-xs text-[#c0c6d6] space-y-1.5 pl-8 list-disc">
+                        <li><strong>Failover Invisible:</strong> Si una tormenta bota la señal principal (Zeno), el reproductor conmuta al respaldo (SonicPanel) en 3 segundos sin que el oyente deba refrescar.</li>
+                        <li><strong>Modo Auto / Bote:</strong> Botón de volante en el reproductor activa pantalla gigante con Play/Pausa de 120px y clima marino para Ruta P-72S y embarcaciones.</li>
+                        <li><strong>Antispam Cabina:</strong> Cooldown de 45s protege el WhatsApp de la emisora ante envíos masivos.</li>
                       </ul>
                     </div>
                   </div>
