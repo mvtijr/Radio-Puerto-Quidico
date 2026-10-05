@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { RADIO_CONFIG as DEFAULT_RADIO_CONFIG } from '../config/radioConfig';
 import { fetchLiveMaritimeWeather } from '../services/maritimeWeatherService';
+import { getRemoteRadioConfig, saveRemoteRadioConfig, subscribeToRadioChanges } from '../services/supabaseService';
 
 const RadioConfigContext = createContext();
 
@@ -110,10 +111,9 @@ export const RadioConfigProvider = ({ children }) => {
   const [lastSyncTime, setLastSyncTime] = useState(null);
   const isSyncingRef = useRef(false);
 
-  // Empujar configuración a la nube / API local en tiempo real
+  // Empujar configuración a la nube (Supabase Realtime con fallback) en tiempo real
   const pushConfigToCloud = useCallback(async (configToPush = null) => {
     const data = configToPush || config;
-    const targetUrl = data?.remoteSyncUrl || '/api/remote-config';
 
     const payload = {
       version: "2.0",
@@ -132,6 +132,20 @@ export const RadioConfigProvider = ({ children }) => {
       sponsors: data.sponsors
     };
 
+    // 1. Guardar en Supabase (distribución instantánea a todos los oyentes en vivo)
+    try {
+      const sbRes = await saveRemoteRadioConfig(payload);
+      if (sbRes && sbRes.success) {
+        setSyncStatus('synced');
+        setLastSyncTime(new Date().toLocaleTimeString('es-CL'));
+        return { success: true, target: 'supabase' };
+      }
+    } catch (sbErr) {
+      console.warn("[RadioConfigContext] Aviso en Supabase:", sbErr);
+    }
+
+    // 2. Fallback a endpoint local/personalizado
+    const targetUrl = data?.remoteSyncUrl || '/api/remote-config';
     try {
       const res = await fetch(targetUrl, {
         method: 'POST',
@@ -141,7 +155,7 @@ export const RadioConfigProvider = ({ children }) => {
       if (res.ok) {
         setSyncStatus('synced');
         setLastSyncTime(new Date().toLocaleTimeString('es-CL'));
-        return { success: true };
+        return { success: true, target: 'endpoint' };
       }
     } catch (err) {
       console.warn("[RadioConfigContext] Error al empujar a la nube/endpoint:", err.message);
@@ -272,12 +286,57 @@ export const RadioConfigProvider = ({ children }) => {
     }
   }, [saveConfig]);
 
-  // Sincronización remota de alertas de emergencia y cambios globales
+  // Sincronización remota de alertas de emergencia y cambios globales (Supabase + fallback)
   const syncRemoteConfig = useCallback(async (customUrl = null) => {
     if (isSyncingRef.current) return;
     isSyncingRef.current = true;
     setSyncStatus('syncing');
 
+    const applyRemoteData = (remoteData) => {
+      if (!remoteData) return;
+      setConfig(prev => {
+        let emergencyAlert = prev.emergencyAlert;
+        if (remoteData.emergencyAlert) {
+          const localTime = prev.emergencyAlert?.timestamp || 0;
+          const remoteTime = remoteData.emergencyAlert?.timestamp || (remoteData.updatedAt ? new Date(remoteData.updatedAt).getTime() : 0);
+          
+          if (remoteTime >= localTime || !prev.emergencyAlert?.active || remoteData.emergencyAlert?.active !== prev.emergencyAlert?.active) {
+            emergencyAlert = {
+              ...prev.emergencyAlert,
+              ...remoteData.emergencyAlert
+            };
+          }
+        }
+
+        const merged = {
+          ...prev,
+          emergencyAlert,
+          streamUrl: remoteData.streamUrl || prev.streamUrl,
+          streamUrlHd: remoteData.streamUrlHd || prev.streamUrlHd,
+          streamUrlEco: remoteData.streamUrlEco || prev.streamUrlEco,
+          onAir: remoteData.onAir ? { ...prev.onAir, ...remoteData.onAir } : prev.onAir,
+        };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        } catch (e) {}
+        return merged;
+      });
+    };
+
+    // 1. Intentar consultar primero la base de datos Supabase
+    try {
+      const sbConfig = await getRemoteRadioConfig();
+      if (sbConfig) {
+        applyRemoteData(sbConfig);
+        setSyncStatus('synced');
+        setLastSyncTime(new Date().toLocaleTimeString('es-CL'));
+        return { success: true, data: sbConfig, source: 'supabase' };
+      }
+    } catch (sbErr) {
+      console.warn("[RadioConfigContext] Supabase sync fallback:", sbErr);
+    }
+
+    // 2. Fallback a archivo JSON estático (/radio-remote-config.json)
     const targetUrl = customUrl || config?.remoteSyncUrl || DEFAULT_REMOTE_CONFIG_URL;
 
     try {
@@ -297,39 +356,11 @@ export const RadioConfigProvider = ({ children }) => {
       }
 
       const remoteData = await res.json();
-
-      // Fusionar suavemente alertas de emergencia y cambios del servidor sin borrar ediciones locales
-      setConfig(prev => {
-        let emergencyAlert = prev.emergencyAlert;
-        if (remoteData.emergencyAlert) {
-          const localTime = prev.emergencyAlert?.timestamp || 0;
-          const remoteTime = remoteData.emergencyAlert?.timestamp || (remoteData.updatedAt ? new Date(remoteData.updatedAt).getTime() : 0);
-          
-          // Si el servidor es más reciente o si el local no tiene alerta activa, aplicar
-          if (remoteTime >= localTime || !prev.emergencyAlert?.active) {
-            emergencyAlert = {
-              ...prev.emergencyAlert,
-              ...remoteData.emergencyAlert
-            };
-          }
-        }
-
-        const merged = {
-          ...prev,
-          emergencyAlert,
-          streamUrl: remoteData.streamUrl || prev.streamUrl,
-          streamUrlHd: remoteData.streamUrlHd || prev.streamUrlHd,
-          streamUrlEco: remoteData.streamUrlEco || prev.streamUrlEco,
-        };
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-        } catch (e) {}
-        return merged;
-      });
+      applyRemoteData(remoteData);
 
       setSyncStatus('synced');
       setLastSyncTime(new Date().toLocaleTimeString('es-CL'));
-      return { success: true, data: remoteData };
+      return { success: true, data: remoteData, source: 'json' };
     } catch (err) {
       console.warn("[RadioConfigContext] Sincronización remota no disponible o en espera:", err.message);
       setSyncStatus('error');
@@ -339,7 +370,7 @@ export const RadioConfigProvider = ({ children }) => {
     }
   }, [config?.remoteSyncUrl]);
 
-  // Polling periódico silencioso de configuración remota cada 60s y carga meteorológica inicial
+  // Polling periódico y WebSockets de Supabase en tiempo real
   useEffect(() => {
     // Sincronización inicial
     syncRemoteConfig();
@@ -347,13 +378,39 @@ export const RadioConfigProvider = ({ children }) => {
     // Actualización de clima marítimo en vivo satelital en background
     refreshLiveMaritimeWeather().catch(() => {});
 
+    // Suscripción WebSocket a cambios instantáneos en Supabase
+    const unsubscribe = subscribeToRadioChanges((realtimeData) => {
+      if (realtimeData) {
+        console.log("[Supabase Realtime] Alerta de emergencia o cambio al aire recibido:", realtimeData);
+        setConfig(prev => {
+          const merged = {
+            ...prev,
+            emergencyAlert: realtimeData.emergencyAlert ? { ...prev.emergencyAlert, ...realtimeData.emergencyAlert } : prev.emergencyAlert,
+            streamUrl: realtimeData.streamUrl || prev.streamUrl,
+            streamUrlHd: realtimeData.streamUrlHd || prev.streamUrlHd,
+            streamUrlEco: realtimeData.streamUrlEco || prev.streamUrlEco,
+            onAir: realtimeData.onAir ? { ...prev.onAir, ...realtimeData.onAir } : prev.onAir,
+          };
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+          } catch (e) {}
+          return merged;
+        });
+        setSyncStatus('synced');
+        setLastSyncTime(new Date().toLocaleTimeString('es-CL'));
+      }
+    });
+
     const interval = setInterval(() => {
       if (typeof document !== 'undefined' && !document.hidden) {
         syncRemoteConfig();
       }
     }, 60000);
 
-    return () => clearInterval(interval);
+    return () => {
+      unsubscribe();
+      clearInterval(interval);
+    };
   }, [syncRemoteConfig, refreshLiveMaritimeWeather]);
 
   return (
