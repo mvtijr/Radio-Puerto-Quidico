@@ -8,7 +8,7 @@ const RadioConfigContext = createContext();
 const STORAGE_KEY = 'radio_puerto_quidico_config_v6';
 const OLD_STORAGE_KEYS = ['radio_puerto_quidico_config_v5', 'radio_puerto_quidico_config_v2', 'radio_puerto_quidico_config_v1', 'radio_puerto_quidico_config'];
 const PIN_KEY = 'radio_admin_pin_v1';
-const DEFAULT_PIN = '1051';
+const DEFAULT_PIN_HASH = 'e4060c65ed74ee4cd0bd522c469fa7470e8929895b72595069ea5ed2307e4bf5';
 const DEFAULT_REMOTE_CONFIG_URL = '/radio-remote-config.json';
 
 const OFFICIAL_SHOW_IDS = ['prog-noticias-matinal', 'prog-noticias-mediodia', 'prog-surcando-el-lafken', 'prog-dj-dino'];
@@ -101,9 +101,9 @@ export const RadioConfigProvider = ({ children }) => {
 
   const [adminPin, setAdminPin] = useState(() => {
     try {
-      return localStorage.getItem(PIN_KEY) || DEFAULT_PIN;
+      return localStorage.getItem(PIN_KEY) || DEFAULT_PIN_HASH;
     } catch (e) {
-      return DEFAULT_PIN;
+      return DEFAULT_PIN_HASH;
     }
   });
 
@@ -234,16 +234,11 @@ export const RadioConfigProvider = ({ children }) => {
   const verifyPin = useCallback(async (candidate) => {
     if (!candidate) return false;
     const trimmed = candidate.toString().trim();
-    // 1. Coincidencia directa con adminPin (sea texto plano legacy o hash)
+    // 1. Coincidencia directa con adminPin
     if (trimmed === adminPin) return true;
-    // 2. Coincidencia con PIN por defecto oficial (1051)
-    if (trimmed === DEFAULT_PIN) return true;
-    // 3. Hash del candidato comparado con adminPin
+    // 2. Hash criptográfico del candidato comparado con adminPin o hash predeterminado
     const candidateHash = await hashPin(trimmed);
-    if (candidateHash === adminPin) return true;
-    // 4. Hash del candidato comparado con hash del PIN por defecto
-    const defaultHash = await hashPin(DEFAULT_PIN);
-    if (candidateHash === defaultHash) return true;
+    if (candidateHash === adminPin || candidateHash === DEFAULT_PIN_HASH) return true;
     return false;
   }, [adminPin]);
 

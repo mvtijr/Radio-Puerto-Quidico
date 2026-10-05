@@ -672,7 +672,7 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                 maxLength={8}
                 value={enteredPin}
                 onChange={(e) => setEnteredPin(e.target.value)}
-                placeholder="Ingresa PIN (por defecto: 1051)"
+                placeholder="••••••••"
                 className="w-full bg-[#010e24] border border-[#a8c8ff]/30 rounded-2xl px-4 py-3 text-center text-lg tracking-widest text-white placeholder-slate-500 focus:outline-none focus:border-[#00d2ff] font-mono transition-colors"
                 autoFocus
               />
@@ -689,8 +689,8 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
               </button>
             </form>
 
-            <span className="text-[11px] text-[#8a919f] font-['Inter',sans-serif]">
-              💡 PIN predeterminado de fábrica: <strong className="text-white">1051</strong>
+            <span className="text-[11px] text-[#8a919f] font-['Inter',sans-serif] flex items-center gap-1.5">
+              <i className="fa-solid fa-shield-halved text-[#00d2ff] text-[10px]"></i> Acceso restringido al personal autorizado
             </span>
           </div>
         ) : (
@@ -2996,7 +2996,7 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                         <span>🔐 Acceso Seguro & Atajos de Cabina</span>
                       </div>
                       <ul className="text-xs text-[#c0c6d6] space-y-1.5 pl-8 list-disc">
-                        <li><strong>PIN por Defecto:</strong> <code className="bg-[#010e24] px-1.5 py-0.5 rounded text-[#00d2ff] font-mono">1051</code>. Puedes modificarlo en la pestaña "Respaldos & PIN".</li>
+                        <li><strong>Protección Criptográfica:</strong> Resguardado con hash seguro SHA-256. Puedes actualizar tu PIN en la pestaña "Respaldos & PIN".</li>
                         <li><strong>Atajo Rápido:</strong> Presiona <kbd className="bg-[#010e24] px-1.5 py-0.5 rounded text-white border border-white/20">Alt + A</kbd> o <kbd className="bg-[#010e24] px-1.5 py-0.5 rounded text-white border border-white/20">Ctrl + Shift + A</kbd> desde cualquier lugar.</li>
                         <li><strong>Pie de Página:</strong> Clic en el botón con candado "Panel Emisora".</li>
                       </ul>

@@ -166,7 +166,7 @@ export const Footer = ({ onScrollTo, onOpenRequestModal, onOpenAdminModal, onOpe
                   type="button"
                   onClick={onOpenAdminModal}
                   className="hover:text-[#00d2ff] text-[#a8c8ff]/70 transition-colors flex items-center gap-1.5 cursor-pointer font-['Inter',sans-serif] text-[11px] bg-[#1c2a41]/70 hover:bg-[#1c2a41] px-2.5 py-1 rounded-lg border border-[#a8c8ff]/20 shadow-sm"
-                  title="Acceso exclusivo administración de la radio (PIN: 1051)"
+                  title="Panel de Emisora (Acceso Exclusivo de Cabina)"
                 >
                   <i className="fa-solid fa-lock text-[10px] text-[#00d2ff]"></i>
                   <span>Panel Emisora</span>

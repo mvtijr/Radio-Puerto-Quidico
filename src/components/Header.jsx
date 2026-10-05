@@ -94,7 +94,7 @@ export const Header = ({ onOpenRequestModal, onOpenMaritimeModal, onOpenPWAInsta
                   type="button"
                   onClick={onOpenAdminModal}
                   className="hover:text-white text-[#00d2ff] transition-all hidden sm:inline-flex items-center gap-1.5 text-[10px] font-['Montserrat',sans-serif] font-bold uppercase tracking-wider bg-[#071933] hover:bg-[#00d2ff]/20 border border-[#00d2ff]/40 px-2.5 py-0.5 rounded-full cursor-pointer shadow-sm"
-                  title="Panel de Emisora y Control (PIN: 1051 • Atajo Alt+A)"
+                  title="Panel de Emisora (Acceso Autorizado)"
                 >
                   <i className="fa-solid fa-lock text-[9px] text-[#00d2ff]"></i>
                   <span>Panel Emisora</span>
@@ -332,7 +332,10 @@ export const Header = ({ onOpenRequestModal, onOpenMaritimeModal, onOpenPWAInsta
                   <i className="fa-solid fa-lock text-[#00d2ff]"></i>
                   <span>Panel de Control de la Emisora</span>
                 </span>
-                <span className="text-[10px] text-[#00d2ff] font-mono bg-[#002955] px-2 py-0.5 rounded-md">PIN: 1051</span>
+                <span className="text-[10px] text-[#a5e7ff] font-mono bg-[#002955] px-2.5 py-0.5 rounded-md flex items-center gap-1">
+                  <i className="fa-solid fa-key text-[9px] text-[#00d2ff]"></i>
+                  <span>Cabina</span>
+                </span>
               </button>
             )}
           </div>

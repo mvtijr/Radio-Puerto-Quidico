@@ -124,14 +124,6 @@ export const AboutSection = () => {
               </div>
             </div>
 
-            {/* Recuadro de Administración de la Radio */}
-            <div className="mt-6 p-4 rounded-2xl bg-[#010e24]/90 border border-[#00d2ff]/25 text-xs text-[#a5e7ff] leading-relaxed">
-              <span className="font-bold text-white block mb-1 font-['Montserrat',sans-serif] uppercase tracking-wide flex items-center gap-1.5">
-                <i className="fa-solid fa-lock text-[#00d2ff]"></i> Panel de Administración Integrado
-              </span>
-              Puedes actualizar la señal de streaming, la parrilla semanal, publicar noticias y auspiciadores abriendo el panel con <strong className="text-white">Ctrl + Shift + A</strong> o desde el botón <strong className="text-white">Panel Emisora</strong> en el pie de página (PIN: <strong className="text-white">1051</strong>).
-            </div>
-
           </div>
 
         </div>
