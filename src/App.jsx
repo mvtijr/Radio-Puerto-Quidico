@@ -104,7 +104,10 @@ function AppContent() {
           <ScheduleSection />
 
           {/* Radio a la Carta: Repositorio Comunitario de Pódcasts y Programas Grabados */}
-          <PodcastsSection />
+          <PodcastsSection 
+            onOpenAdminModal={() => setIsAdminModalOpen(true)}
+            onOpenRequestModal={handleOpenRequestModal}
+          />
 
           {/* Auspiciadores Oficiales de la Costa */}
           <SponsorsSection 

@@ -335,49 +335,8 @@ export const RADIO_CONFIG = {
     }
   ],
 
-  // Podcasts y Programas Grabados
-  podcasts: [
-    {
-      id: "pod-1",
-      title: "Relatos de Mar: 50 años de historia en la Caleta de Quidico",
-      duration: "24:15",
-      date: "Septiembre 2026",
-      category: "Historia Local",
-      description: "Don Segundo Huenchuñir nos cuenta cómo era la pesca en chalupas a remo y los grandes temporales que forjaron la identidad del pueblo.",
-      audioUrl: "https://cdn.freesound.org/previews/612/612089_11861866-lq.mp3",
-      cover: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-      id: "pod-2",
-      title: "Especial Isla Mocha: Tradición, leyendas y aislamiento insular",
-      duration: "32:40",
-      date: "Agosto 2026",
-      category: "Reportaje Especial",
-      description: "Entrevista a familias mochanas sobre la vida cotidiana en la isla, la preservación del fardela blanca y sus desafíos de conectividad.",
-      audioUrl: "https://cdn.freesound.org/previews/612/612089_11861866-lq.mp3",
-      cover: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-      id: "pod-3",
-      title: "Entrevista Alcaldía: Temporada de Pesca y Obras de la Caleta",
-      duration: "18:50",
-      date: "Octubre 2026",
-      category: "Comunidad & Autoridades",
-      description: "Balance de las gestiones municipales, proyectos de agua potable rural y mejoras en los accesos viales para pescadores de Tirúa y Quidico.",
-      audioUrl: "https://cdn.freesound.org/previews/612/612089_11861866-lq.mp3",
-      cover: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-      id: "pod-4",
-      title: "Especial Ranchero Costero: Lo Mejor de DJ Dino en Vivo",
-      duration: "45:10",
-      date: "Octubre 2026",
-      category: "Música & Entretención",
-      description: "Sesión exclusiva grabada del programa de fin de semana con los mejores éxitos rancheros y saludos de auditores de toda la costa.",
-      audioUrl: "https://cdn.freesound.org/previews/612/612089_11861866-lq.mp3",
-      cover: "/images/originales_blog/en-vivo-banner.jpg"
-    }
-  ],
+  // Podcasts y Programas Grabados (Gestionables dinámicamente desde el Panel de Emisora)
+  podcasts: [],
 
   // Reporte Náutico y Mareas de Caleta Quidico & Tirúa
   maritimeWeather: {

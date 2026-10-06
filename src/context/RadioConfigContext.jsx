@@ -76,6 +76,19 @@ export const RadioConfigProvider = ({ children }) => {
           }
         }
 
+        // Filtrar estrictamente y eliminar títulos de prueba anteriores de pódcasts
+        const MOCK_POD_IDS = ['pod-1', 'pod-2', 'pod-3', 'pod-4'];
+        let podcasts = [];
+        if (Array.isArray(parsed.podcasts)) {
+          podcasts = parsed.podcasts.filter(p => 
+            !MOCK_POD_IDS.includes(p?.id) && 
+            !p?.title?.includes('Relatos de Mar') && 
+            !p?.title?.includes('Especial Isla Mocha') && 
+            !p?.title?.includes('Entrevista Alcaldía') && 
+            !p?.title?.includes('Especial Ranchero Costero')
+          );
+        }
+
         return {
           ...DEFAULT_RADIO_CONFIG,
           ...parsed,
@@ -85,13 +98,13 @@ export const RadioConfigProvider = ({ children }) => {
           audioSources,
           schedule,
           sponsors,
+          podcasts,
           contact: { ...DEFAULT_RADIO_CONFIG.contact, ...(parsed.contact || {}) },
           branding: { ...DEFAULT_RADIO_CONFIG.branding, ...(parsed.branding || {}) },
           maritimeWeather: { ...DEFAULT_RADIO_CONFIG.maritimeWeather, ...(parsed.maritimeWeather || {}) },
           onAir: { ...DEFAULT_RADIO_CONFIG.onAir, ...(parsed.onAir || {}) },
           emergencyAlert: { ...DEFAULT_RADIO_CONFIG.emergencyAlert, ...(parsed.emergencyAlert || {}) },
           remoteBroadcast: { ...DEFAULT_RADIO_CONFIG.remoteBroadcast, ...(parsed.remoteBroadcast || {}) },
-          podcasts: Array.isArray(parsed.podcasts) && parsed.podcasts.length > 0 ? parsed.podcasts : DEFAULT_RADIO_CONFIG.podcasts,
         };
       }
     } catch {
@@ -188,6 +201,7 @@ export const RadioConfigProvider = ({ children }) => {
         emergencyAlert: partial.emergencyAlert ? { ...prev.emergencyAlert, ...partial.emergencyAlert } : prev.emergencyAlert,
         audioSources: partial.audioSources ? { ...prev.audioSources, ...partial.audioSources } : prev.audioSources,
         remoteBroadcast: partial.remoteBroadcast ? { ...prev.remoteBroadcast, ...partial.remoteBroadcast } : prev.remoteBroadcast,
+        podcasts: Array.isArray(partial.podcasts) ? partial.podcasts : prev.podcasts,
       };
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));

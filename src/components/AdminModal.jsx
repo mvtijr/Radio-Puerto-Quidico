@@ -128,6 +128,7 @@ export const AdminModal = ({ isOpen, onClose }) => {
         emergencyAlert: config.emergencyAlert || RADIO_CONFIG.emergencyAlert,
         audioSources: config.audioSources || RADIO_CONFIG.audioSources,
         remoteBroadcast: config.remoteBroadcast || RADIO_CONFIG.remoteBroadcast,
+        podcasts: Array.isArray(config.podcasts) ? config.podcasts : [],
       });
       setPinError('');
       setToastMessage('');
@@ -2269,15 +2270,15 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                       onClick={() => {
                         const newPod = {
                           id: `pod-${Date.now()}`,
-                          title: "Nuevo Programa Grabado",
-                          duration: "30:00",
+                          title: "Nuevo Programa o Entrevista",
+                          duration: "25:00",
                           date: "Octubre 2026",
-                          category: "Historia Local",
-                          description: "Descripción del episodio o entrevista comunitaria.",
-                          audioUrl: "https://cdn.freesound.org/previews/612/612089_11861866-lq.mp3",
+                          category: "Informativo",
+                          description: "Descripción del contenido transmitido al aire.",
+                          audioUrl: "",
                           cover: "/images/originales_blog/header-banner.jpg"
                         };
-                        setFormData({ ...formData, podcasts: [...(formData.podcasts || RADIO_CONFIG.podcasts || []), newPod] });
+                        setFormData({ ...formData, podcasts: [...(formData.podcasts || []), newPod] });
                       }}
                       className="bg-[#00d2ff] hover:bg-[#a5e7ff] text-[#003543] px-3.5 py-1.5 rounded-xl font-bold uppercase text-[11px] tracking-wide flex items-center gap-1.5 cursor-pointer shadow"
                     >
@@ -2285,8 +2286,38 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                     </button>
                   </div>
 
-                  <div className="space-y-3">
-                    {(formData.podcasts || RADIO_CONFIG.podcasts)?.map((pod, index) => (
+                  {(!formData.podcasts || formData.podcasts.length === 0) ? (
+                    <div className="bg-[#112036]/50 border border-dashed border-[#a8c8ff]/30 rounded-2xl p-8 text-center space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-[#00d2ff]/10 text-[#00d2ff] flex items-center justify-center mx-auto text-xl">
+                        <i className="fa-solid fa-headphones"></i>
+                      </div>
+                      <h4 className="text-white font-bold text-sm">No hay episodios configurados en Radio a la Carta</h4>
+                      <p className="text-xs text-[#c0c6d6] max-w-md mx-auto">
+                        Presiona el botón a continuación para registrar el primer programa grabado o entrevista comunitaria de la emisora.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newPod = {
+                            id: `pod-${Date.now()}`,
+                            title: "Nuevo Programa o Entrevista",
+                            duration: "25:00",
+                            date: "Octubre 2026",
+                            category: "Informativo",
+                            description: "Descripción del contenido transmitido al aire.",
+                            audioUrl: "",
+                            cover: "/images/originales_blog/header-banner.jpg"
+                          };
+                          setFormData({ ...formData, podcasts: [newPod] });
+                        }}
+                        className="bg-[#00d2ff] hover:bg-[#a5e7ff] text-[#003543] px-4 py-2 rounded-xl font-bold uppercase text-xs tracking-wide inline-flex items-center gap-2 cursor-pointer shadow-md"
+                      >
+                        <i className="fa-solid fa-plus"></i> Agregar Primer Pódcast Oficial
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {formData.podcasts.map((pod, index) => (
                       <div key={pod.id || index} className="bg-[#112036]/70 border border-[#a8c8ff]/20 rounded-2xl p-4 space-y-3">
                         <div className="flex items-center justify-between border-b border-[#a8c8ff]/10 pb-2">
                           <span className="font-['Montserrat',sans-serif] font-bold text-white text-sm flex items-center gap-2">
@@ -2296,7 +2327,7 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                           <button
                             type="button"
                             onClick={() => {
-                              const updated = (formData.podcasts || RADIO_CONFIG.podcasts).filter((_, i) => i !== index);
+                              const updated = (formData.podcasts || []).filter((_, i) => i !== index);
                               setFormData({ ...formData, podcasts: updated });
                             }}
                             className="text-[#ffb4ab] hover:text-white text-xs flex items-center gap-1 transition-colors cursor-pointer"
@@ -2312,7 +2343,7 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                               type="text"
                               value={pod.title || ''}
                               onChange={(e) => {
-                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                const currentList = [...(formData.podcasts || [])];
                                 currentList[index] = { ...currentList[index], title: e.target.value };
                                 setFormData({ ...formData, podcasts: currentList });
                               }}
@@ -2323,17 +2354,17 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                           <div>
                             <label className="block text-[10px] uppercase text-[#a5e7ff] mb-1 font-bold">Categoría</label>
                             <select
-                              value={pod.category || 'Historia Local'}
+                              value={pod.category || 'Informativo'}
                               onChange={(e) => {
-                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                const currentList = [...(formData.podcasts || [])];
                                 currentList[index] = { ...currentList[index], category: e.target.value };
                                 setFormData({ ...formData, podcasts: currentList });
                               }}
                               className="w-full bg-[#010e24] border border-[#a8c8ff]/20 rounded-lg px-2.5 py-1.5 text-white"
                             >
-                              <option value="Historia Local">Historia Local</option>
-                              <option value="Reportaje Especial">Reportaje Especial</option>
-                              <option value="Comunidad & Autoridades">Comunidad & Autoridades</option>
+                              <option value="Informativo">Informativo</option>
+                              <option value="Comunidad & Entrevistas">Comunidad & Entrevistas</option>
+                              <option value="Cultura & Tradición">Cultura & Tradición</option>
                               <option value="Música & Entretención">Música & Entretención</option>
                             </select>
                           </div>
@@ -2344,7 +2375,7 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                               type="text"
                               value={pod.duration || ''}
                               onChange={(e) => {
-                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                const currentList = [...(formData.podcasts || [])];
                                 currentList[index] = { ...currentList[index], duration: e.target.value };
                                 setFormData({ ...formData, podcasts: currentList });
                               }}
@@ -2358,7 +2389,7 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                               type="text"
                               value={pod.date || ''}
                               onChange={(e) => {
-                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                const currentList = [...(formData.podcasts || [])];
                                 currentList[index] = { ...currentList[index], date: e.target.value };
                                 setFormData({ ...formData, podcasts: currentList });
                               }}
@@ -2372,7 +2403,7 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                               type="text"
                               value={pod.cover || ''}
                               onChange={(e) => {
-                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                const currentList = [...(formData.podcasts || [])];
                                 currentList[index] = { ...currentList[index], cover: e.target.value };
                                 setFormData({ ...formData, podcasts: currentList });
                               }}
@@ -2386,7 +2417,7 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                               type="text"
                               value={pod.audioUrl || ''}
                               onChange={(e) => {
-                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                const currentList = [...(formData.podcasts || [])];
                                 currentList[index] = { ...currentList[index], audioUrl: e.target.value };
                                 setFormData({ ...formData, podcasts: currentList });
                               }}
@@ -2400,7 +2431,7 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                               rows={2}
                               value={pod.description || ''}
                               onChange={(e) => {
-                                const currentList = [...(formData.podcasts || RADIO_CONFIG.podcasts)];
+                                const currentList = [...(formData.podcasts || [])];
                                 currentList[index] = { ...currentList[index], description: e.target.value };
                                 setFormData({ ...formData, podcasts: currentList });
                               }}
@@ -2410,7 +2441,8 @@ Tu Radio de Siempre • La Costa de Arauco al Mundo
                         </div>
                       </div>
                     ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )}
 
